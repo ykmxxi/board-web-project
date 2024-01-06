@@ -1,20 +1,12 @@
 package com.example.board.domain;
 
-import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,9 +30,8 @@ import lombok.ToString.Exclude;
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-@EntityListeners(AuditingEntityListener.class)
 @Entity
-public class Article {
+public class Article extends AuditingFields {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -57,15 +48,6 @@ public class Article {
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     @Exclude
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
-
-    @CreatedDate @Column(nullable = false)
-    private LocalDateTime createdAt;
-    @CreatedBy @Column(nullable = false)
-    private String createdBy;
-    @LastModifiedDate @Column(nullable = false)
-    private LocalDateTime modifiedAt;
-    @LastModifiedBy @Column(nullable = false)
-    private String modifiedBy;
 
     private Article(final String title, final String content, final String hashtag) {
         this.title = title;
