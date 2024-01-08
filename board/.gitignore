@@ -13,6 +13,9 @@ HELP.md
 .idea/**/dictionaries
 .idea/**/shelf
 
+# Querydsl
+src/main/generated
+
 # AWS User-specific
 .idea/**/aws.xml
 
