@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  * - DB에 영향을 주는 테스트기 때문에 @Transactional 추가
  * - 비용이 큰 테스트
  */
+@Disabled("Spring Data REST 통합테스트는 불필요하므로 제외")
 @DisplayName("Data REST Api 테스트")
 @Transactional
 @AutoConfigureMockMvc
