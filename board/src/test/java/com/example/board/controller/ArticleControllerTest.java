@@ -38,7 +38,6 @@ class ArticleControllerTest {
                 .andExpect(model().attributeExists("articles"));
     }
 
-    @Disabled
     @DisplayName("[view][GET] 게시글 리스트 상세 페이지 정상 호출")
     @Test
     void 게시글_리스트_상세_페이지() throws Exception {
