@@ -23,7 +23,7 @@ import lombok.ToString;
 @ToString
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
-public class AuditingFields {
+public abstract class AuditingFields {
 
     @DateTimeFormat(iso = ISO.DATE_TIME) // 파싱(Parsing) 룰
     @CreatedDate @Column(nullable = false)
