@@ -42,14 +42,14 @@ public class ArticleComment extends AuditingFields {
     @Setter @Column(nullable = false, length = 500)
     private String content;
 
-    private ArticleComment(final UserAccount userAccount, final Article article, final String content) {
-        this.userAccount = userAccount;
+    private ArticleComment(final Article article, final UserAccount userAccount, final String content) {
         this.article = article;
+        this.userAccount = userAccount;
         this.content = content;
     }
 
-    public static ArticleComment of(final UserAccount userAccount, final Article article, final String content) {
-        return new ArticleComment(userAccount, article, content);
+    public static ArticleComment of(final Article article, final UserAccount userAccount, final String content) {
+        return new ArticleComment(article, userAccount, content);
     }
 
     @Override

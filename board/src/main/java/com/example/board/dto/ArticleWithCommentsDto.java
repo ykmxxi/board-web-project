@@ -1,12 +1,17 @@
 package com.example.board.dto;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.example.board.domain.Article;
 
-public record ArticleDto(
+public record ArticleWithCommentsDto(
+
         Long id,
         UserAccountDto userAccountDto,
+        Set<ArticleCommentDto> articleCommentDtos,
         String title,
         String content,
         String hashtag,
@@ -16,9 +21,10 @@ public record ArticleDto(
         String modifiedBy
 ) {
 
-    public static ArticleDto of(
+    public static ArticleWithCommentsDto of(
             final Long id,
             final UserAccountDto userAccountDto,
+            final Set<ArticleCommentDto> articleCommentDtos,
             final String title,
             final String content,
             final String hashtag,
@@ -27,9 +33,10 @@ public record ArticleDto(
             final LocalDateTime modifiedAt,
             final String modifiedBy
     ) {
-        return new ArticleDto(
+        return new ArticleWithCommentsDto(
                 id,
                 userAccountDto,
+                articleCommentDtos,
                 title,
                 content,
                 hashtag,
@@ -40,10 +47,13 @@ public record ArticleDto(
         );
     }
 
-    public static ArticleDto from(final Article entity) {
-        return new ArticleDto(
+    public static ArticleWithCommentsDto from(final Article entity) {
+        return new ArticleWithCommentsDto(
                 entity.getId(),
                 UserAccountDto.from(entity.getUserAccount()),
+                entity.getArticleComments().stream()
+                        .map(ArticleCommentDto::from)
+                        .collect(Collectors.toCollection(LinkedHashSet::new)),
                 entity.getTitle(),
                 entity.getContent(),
                 entity.getHashtag(),
@@ -51,15 +61,6 @@ public record ArticleDto(
                 entity.getCreatedBy(),
                 entity.getModifiedAt(),
                 entity.getModifiedBy()
-        );
-    }
-
-    public Article toEntity() {
-        return Article.of(
-                userAccountDto.toEntity(),
-                title,
-                content,
-                hashtag
         );
     }
 
