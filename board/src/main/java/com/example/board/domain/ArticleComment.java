@@ -25,12 +25,16 @@ import lombok.ToString.Exclude;
         @Index(columnList = "createdBy"),
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
+@ToString(callSuper = true)
 @Entity
 public class ArticleComment extends AuditingFields {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Setter
+    @ManyToOne(optional = false)
+    private UserAccount userAccount;
 
     @Setter @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @Exclude
@@ -38,13 +42,14 @@ public class ArticleComment extends AuditingFields {
     @Setter @Column(nullable = false, length = 500)
     private String content;
 
-    private ArticleComment(final Article article, final String content) {
+    private ArticleComment(final UserAccount userAccount, final Article article, final String content) {
+        this.userAccount = userAccount;
         this.article = article;
         this.content = content;
     }
 
-    public static ArticleComment of(final Article article, final String content) {
-        return new ArticleComment(article, content);
+    public static ArticleComment of(final UserAccount userAccount, final Article article, final String content) {
+        return new ArticleComment(userAccount, article, content);
     }
 
     @Override
