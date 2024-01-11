@@ -1,6 +1,5 @@
 package com.example.board.dto;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public record ArticleDto(
@@ -9,7 +8,7 @@ public record ArticleDto(
         String title,
         String content,
         String hashtag
-) implements Serializable {
+) {
 
     public static ArticleDto of(
             final LocalDateTime createdAt,
