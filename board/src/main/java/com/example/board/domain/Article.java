@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
@@ -19,7 +20,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.ToString.Exclude;
 
 @Getter
 @Table(indexes = {
@@ -29,12 +29,16 @@ import lombok.ToString.Exclude;
         @Index(columnList = "createdBy")
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
+@ToString(callSuper = true)
 @Entity
 public class Article extends AuditingFields {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Setter
+    @ManyToOne(optional = false)
+    private UserAccount userAccount;
 
     @Setter @Column(nullable = false)
     private String title;
@@ -44,19 +48,25 @@ public class Article extends AuditingFields {
     @Setter
     private String hashtag;
 
-    @OrderBy("id")
+    @ToString.Exclude
+    @OrderBy("createdAt DESC")
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
-    @Exclude
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
-    private Article(final String title, final String content, final String hashtag) {
+    private Article(final UserAccount userAccount, final String title, final String content, final String hashtag) {
+        this.userAccount = userAccount;
         this.title = title;
         this.content = content;
         this.hashtag = hashtag;
     }
 
-    public static Article of(final String title, final String content, final String hashtag) {
-        return new Article(title, content, hashtag);
+    public static Article of(
+            final UserAccount userAccount,
+            final String title,
+            final String content,
+            final String hashtag
+    ) {
+        return new Article(userAccount, title, content, hashtag);
     }
 
     @Override

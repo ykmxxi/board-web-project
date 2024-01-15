@@ -21,7 +21,7 @@ spring:
     defer-datasource-initialization: true # 테스트용 데이터베이스 데이터를 만들 수 있게 설정
     hibernate:
       ddl-auto: create # 엔티티를 보고 자동으로 DDL 생성
-    open-in-view: false
+    open-in-view: false # 스프링부트 경고 로그를 끄고, 더 나은 설계를 위해(영속성 컨텍스트가 트랜잭션 범위 안에서 종료되게끔) osiv 설정을 끈다.
     show-sql: true
     properties:
       hibernate:
