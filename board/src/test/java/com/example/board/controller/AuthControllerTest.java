@@ -1,6 +1,7 @@
 package com.example.board.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -16,7 +17,7 @@ import com.example.board.config.SecurityConfig;
 
 @DisplayName("View 컨트롤러 테스트 - 로그인(인증)")
 @Import(SecurityConfig.class)
-@WebMvcTest
+@WebMvcTest(Void.class)
 class AuthControllerTest {
 
     private final MockMvc mvc;
@@ -33,7 +34,8 @@ class AuthControllerTest {
         // when & then
         mvc.perform(get("/login"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andDo(print());
     }
 
 }
