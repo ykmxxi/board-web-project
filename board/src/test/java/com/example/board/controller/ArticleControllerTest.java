@@ -1,6 +1,7 @@
 package com.example.board.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -11,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Disabled;
@@ -21,7 +23,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -29,6 +33,7 @@ import com.example.board.config.SecurityConfig;
 import com.example.board.dto.ArticleWithCommentsDto;
 import com.example.board.dto.UserAccountDto;
 import com.example.board.service.ArticleService;
+import com.example.board.service.PaginationService;
 
 @DisplayName("View 컨트롤러 테스트 - 게시글")
 @Import(SecurityConfig.class)
@@ -38,6 +43,7 @@ class ArticleControllerTest {
     private final MockMvc mvc;
 
     @MockBean private ArticleService articleService; // MockBean은 생성자 주입 지원 X
+    @MockBean private PaginationService paginationService;
 
     // 테스트 코드는 생성자가 1개여도 @Autowired 꼭 붙여야함
     public ArticleControllerTest(@Autowired final MockMvc mvc) {
@@ -50,16 +56,55 @@ class ArticleControllerTest {
         // given
         given(articleService.searchArticles(eq(null), eq(null), any(Pageable.class)))
                 .willReturn(Page.empty());
+        given(paginationService.getPaginationBarNumbers(anyInt(), anyInt()))
+                .willReturn(List.of(0, 1, 2, 3, 4));
 
         // when & then
         mvc.perform(get("/articles"))
                 .andExpect(status().isOk()) // 200 OK
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML)) // HTML 파일
                 .andExpect(view().name("articles/index"))
-                .andExpect(model().attributeExists("articles"));
+                .andExpect(model().attributeExists("articles"))
+                .andExpect(model().attributeExists("paginationBarNumbers"));
 
         then(articleService).should()
                 .searchArticles(eq(null), eq(null), any(Pageable.class));
+        then(paginationService).should()
+                .getPaginationBarNumbers(anyInt(), anyInt());
+    }
+
+    @DisplayName("[view][GET] 게시글 리스트 페이지 (페이징, 정렬 기능) 정상 호출")
+    @Test
+    void 게시글_리스트_페이지_페이징_정렬() throws Exception {
+        // given
+        String sortName = "title";
+        String direction = "desc";
+        int pageNumber = 0;
+        int pageSize = 5;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Order.desc(sortName)));
+        List<Integer> barNumbers = List.of(1, 2, 3, 4, 5);
+
+        given(articleService.searchArticles(null, null, pageable))
+                .willReturn(Page.empty());
+        given(paginationService.getPaginationBarNumbers(pageable.getPageNumber(), Page.empty().getTotalPages()))
+                .willReturn(barNumbers);
+
+        // when & then
+        mvc.perform(get("/articles")
+                        .queryParam("page", String.valueOf(pageNumber))
+                        .queryParam("size", String.valueOf(pageSize))
+                        .queryParam("sort", sortName + "," + direction)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(view().name("articles/index"))
+                .andExpect(model().attributeExists("articles"))
+                .andExpect(model().attribute("paginationBarNumbers", barNumbers));
+
+        then(articleService).should()
+                .searchArticles(null, null, pageable);
+        then(paginationService).should()
+                .getPaginationBarNumbers(pageable.getPageNumber(), Page.empty().getTotalPages());
     }
 
     @DisplayName("[view][GET] 게시글 리스트 상세 페이지 정상 호출")
@@ -67,8 +112,12 @@ class ArticleControllerTest {
     void 게시글_리스트_상세_페이지() throws Exception {
         // given
         Long articleId = 1L;
+        Long totalCount = 1L;
+
         given(articleService.getArticle(articleId))
                 .willReturn(createArticleWithCommentsDto());
+        given(articleService.getArticleCount())
+                .willReturn(totalCount);
 
         // when & then
         mvc.perform(get("/articles/" + articleId))
@@ -76,10 +125,13 @@ class ArticleControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML)) // HTML 파일
                 .andExpect(view().name("articles/detail"))
                 .andExpect(model().attributeExists("article"))
-                .andExpect(model().attributeExists("articleComments"));
+                .andExpect(model().attributeExists("articleComments"))
+                .andExpect(model().attribute("totalCount", totalCount));
 
         then(articleService).should()
                 .getArticle(articleId);
+        then(articleService).should()
+                .getArticleCount();
     }
 
     @Disabled

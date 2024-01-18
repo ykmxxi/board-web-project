@@ -37,9 +37,12 @@ public class ArticleService {
         return switch (searchType) {
             case TITLE -> articleRepository.findByTitle(searchKeyword, pageable).map(ArticleDto::from);
             case CONTENT -> articleRepository.findByContentContaining(searchKeyword, pageable).map(ArticleDto::from);
-            case ID -> articleRepository.findByUserAccount_UserIdContaining(searchKeyword, pageable).map(ArticleDto::from);
-            case NICKNAME -> articleRepository.findByUserAccount_NicknameContaining(searchKeyword, pageable).map(ArticleDto::from);
-            case HASHTAG -> articleRepository.findByHashtagContaining("#" + searchKeyword, pageable).map(ArticleDto::from);
+            case ID ->
+                    articleRepository.findByUserAccount_UserIdContaining(searchKeyword, pageable).map(ArticleDto::from);
+            case NICKNAME -> articleRepository.findByUserAccount_NicknameContaining(searchKeyword, pageable)
+                    .map(ArticleDto::from);
+            case HASHTAG ->
+                    articleRepository.findByHashtagContaining("#" + searchKeyword, pageable).map(ArticleDto::from);
         };
     }
 
@@ -73,6 +76,10 @@ public class ArticleService {
 
     public void deleteArticle(final Long articleId) {
         articleRepository.deleteById(articleId);
+    }
+
+    public long getArticleCount() {
+        return articleRepository.count();
     }
 
 }
