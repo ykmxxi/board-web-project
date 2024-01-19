@@ -51,7 +51,7 @@ class JpaRepositoryTest {
         // given
         long previous = articleRepository.count();
         UserAccount userAccount = userAccountRepository.save(
-                UserAccount.of("ykmxxi", "password", "email@email.com", "ykmxxi", "hi")
+                UserAccount.of("ykmxxi1", "password", "email@email.com", "ykmxxi", "hi")
         );
 
         // when
