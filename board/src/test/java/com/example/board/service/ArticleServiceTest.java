@@ -8,6 +8,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willDoNothing;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -66,6 +67,37 @@ class ArticleServiceTest {
         // then
         assertThat(articles).isEmpty();
         then(articleRepository).should().findByTitle(searchKeyword, pageable);
+    }
+
+    @DisplayName("검색어 없이 게시글을 해시태그 검색하면, 게시글 페이지를 반환한다.")
+    @Test
+    void givenNoSearchParameters_whenSearchingArticleViaHashtag_thenReturnEmptyPage() {
+        // given
+        Pageable pageable = Pageable.ofSize(20);
+
+        // when
+        Page<ArticleDto> articles = service.searchArticlesViaHashtag(null, pageable);
+
+        // then
+        assertThat(articles).isEmpty();
+        then(articleRepository).shouldHaveNoInteractions();
+    }
+
+    @DisplayName("검색어와 함께 게시글을 해시태그 검색하면, 게시글 페이지를 반환한다.")
+    @Test
+    void givenSearchParameters_whenSearchingArticleViaHashtag_thenReturnArticlesPage() {
+        // given
+        String hashtag = "#java";
+        Pageable pageable = Pageable.ofSize(20);
+        given(articleRepository.findByHashtagContaining(hashtag, pageable))
+                .willReturn(Page.empty(pageable));
+
+        // when
+        Page<ArticleDto> articles = service.searchArticlesViaHashtag(hashtag, pageable);
+
+        // then
+        assertThat(articles).isEmpty();
+        then(articleRepository).should().findByHashtagContaining(hashtag, pageable);
     }
 
     @DisplayName("게시글을 조회하면, 게시글을 반환한다.")
@@ -180,6 +212,21 @@ class ArticleServiceTest {
         then(articleRepository).should().count();
     }
 
+    @DisplayName("해시태그를 조회하면, 유니크 해시태그 리스트를 반환")
+    @Test
+    void givenNothing_whenCalling_thenReturnHashtags() {
+    	// given
+        List<String> expected = List.of("#java", "#spring", "#boot");
+        given(articleRepository.findAllDistinctHashtags())
+                .willReturn(expected);
+
+        // when
+        List<String> hashtags = service.getHashtags();
+
+    	// then
+        assertThat(hashtags).isEqualTo(expected);
+        then(articleRepository).should().findAllDistinctHashtags();
+    }
 
     private UserAccount createUserAccount() {
         return UserAccount.of(

@@ -1,5 +1,7 @@
 package com.example.board.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -47,6 +49,15 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
+    public Page<ArticleDto> searchArticlesViaHashtag(final String hashtag, final Pageable pageable) {
+        if (hashtag == null || hashtag.isBlank()) {
+            return Page.empty(pageable);
+        }
+        return articleRepository.findByHashtagContaining(hashtag, pageable)
+                .map(ArticleDto::from);
+    }
+
+    @Transactional(readOnly = true)
     public ArticleWithCommentsDto getArticle(Long articleId) {
         return articleRepository.findById(articleId)
                 .map(ArticleWithCommentsDto::from)
@@ -80,6 +91,10 @@ public class ArticleService {
 
     public long getArticleCount() {
         return articleRepository.count();
+    }
+
+    public List<String> getHashtags() {
+        return articleRepository.findAllDistinctHashtags();
     }
 
 }
