@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.example.board.domain.Article;
 import com.example.board.domain.ArticleComment;
+import com.example.board.domain.UserAccount;
 
 /**
  * DTO for {@link com.example.board.domain.ArticleComment}
@@ -18,6 +19,23 @@ public record ArticleCommentDto(
         LocalDateTime modifiedAt,
         String modifiedBy
 ) {
+
+    public static ArticleCommentDto of(
+            final Long articleId,
+            final UserAccountDto userAccountDto,
+            final String content
+    ) {
+        return new ArticleCommentDto(
+                null,
+                articleId,
+                userAccountDto,
+                content,
+                null,
+                null,
+                null,
+                null
+        );
+    }
 
     public static ArticleCommentDto of(
             final Long id,
@@ -54,10 +72,10 @@ public record ArticleCommentDto(
         );
     }
 
-    public ArticleComment toEntity(final Article entity) {
+    public ArticleComment toEntity(final Article entity, final UserAccount userAccount) {
         return ArticleComment.of(
                 entity,
-                userAccountDto.toEntity(),
+                userAccount,
                 content
         );
     }

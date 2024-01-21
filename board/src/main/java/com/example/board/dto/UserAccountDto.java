@@ -21,6 +21,16 @@ public record UserAccountDto(
             final String userPassword,
             final String email,
             final String nickname,
+            final String memo
+    ) {
+        return new UserAccountDto(userId, userPassword, email, nickname, memo, null, null, null, null);
+    }
+
+    public static UserAccountDto of(
+            final String userId,
+            final String userPassword,
+            final String email,
+            final String nickname,
             final String memo,
             final LocalDateTime createdAt,
             final String createdBy,

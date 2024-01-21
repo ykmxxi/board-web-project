@@ -23,6 +23,7 @@ import com.example.board.dto.ArticleCommentDto;
 import com.example.board.dto.UserAccountDto;
 import com.example.board.repository.ArticleCommentRepository;
 import com.example.board.repository.ArticleRepository;
+import com.example.board.repository.UserAccountRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -33,6 +34,7 @@ class ArticleCommentServiceTest {
     @InjectMocks private ArticleCommentService service;
     @Mock private ArticleCommentRepository articleCommentRepository;
     @Mock private ArticleRepository articleRepository;
+    @Mock private UserAccountRepository userAccountRepository;
 
     @DisplayName("게시글 ID로 조회하면, 해당하는 댓글 리스트를 반환한다.")
     @Test
@@ -58,6 +60,7 @@ class ArticleCommentServiceTest {
         // given
         ArticleCommentDto dto = createArticleCommentDto("댓글");
         given(articleRepository.getReferenceById(dto.articleId())).willReturn(createArticle());
+        given(userAccountRepository.getReferenceById(dto.userAccountDto().userId())).willReturn(createUserAccount());
         given(articleCommentRepository.save(any(ArticleComment.class))).willReturn(null);
 
         // when
@@ -65,6 +68,7 @@ class ArticleCommentServiceTest {
 
         // then
         then(articleRepository).should().getReferenceById(dto.articleId());
+        then(userAccountRepository).should().getReferenceById(dto.userAccountDto().userId());
         then(articleCommentRepository).should().save(any(ArticleComment.class));
     }
 
@@ -108,13 +112,15 @@ class ArticleCommentServiceTest {
     void givenNonexistentArticleComment_whenUpdatingArticleComment_thenLogsWarningAndDoesNothing() {
         // given
         ArticleCommentDto dto = createArticleCommentDto("댓글");
-        given(articleCommentRepository.getReferenceById(dto.id())).willThrow(EntityNotFoundException.class);
-
+        given(articleRepository.getReferenceById(dto.articleId()))
+                .willThrow(EntityNotFoundException.class);
         // when
-        service.updateArticleComment(dto);
+        service.saveArticleComment(dto);
 
         // then
-        then(articleCommentRepository).should().getReferenceById(dto.id());
+        then(articleRepository).should().getReferenceById(dto.articleId());
+        then(userAccountRepository).shouldHaveNoInteractions();
+        then(articleCommentRepository).shouldHaveNoInteractions();
     }
 
     @DisplayName("댓글 ID를 입력하면, 댓글을 삭제한다.")
