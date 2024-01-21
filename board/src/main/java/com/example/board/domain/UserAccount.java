@@ -4,8 +4,6 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
@@ -28,11 +26,7 @@ import lombok.ToString;
 public class UserAccount extends AuditingFields {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Setter
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String userId;
 
     @Setter
@@ -69,12 +63,12 @@ public class UserAccount extends AuditingFields {
             return false;
         }
         UserAccount that = (UserAccount) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(userId, that.userId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(userId);
     }
 
 }
