@@ -215,7 +215,7 @@ class ArticleServiceTest {
     @DisplayName("해시태그를 조회하면, 유니크 해시태그 리스트를 반환")
     @Test
     void givenNothing_whenCalling_thenReturnHashtags() {
-    	// given
+        // given
         List<String> expected = List.of("#java", "#spring", "#boot");
         given(articleRepository.findAllDistinctHashtags())
                 .willReturn(expected);
@@ -223,7 +223,7 @@ class ArticleServiceTest {
         // when
         List<String> hashtags = service.getHashtags();
 
-    	// then
+        // then
         assertThat(hashtags).isEqualTo(expected);
         then(articleRepository).should().findAllDistinctHashtags();
     }
@@ -265,7 +265,6 @@ class ArticleServiceTest {
 
     private UserAccountDto createUserAccountDto() {
         return UserAccountDto.of(
-                1L,
                 "ykmxxi",
                 "password",
                 "ykmxxi@mail.com",

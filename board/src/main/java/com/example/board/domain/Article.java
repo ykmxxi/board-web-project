@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
@@ -38,6 +39,7 @@ public class Article extends AuditingFields {
 
     @Setter
     @ManyToOne(optional = false)
+    @JoinColumn(name = "userId")
     private UserAccount userAccount;
 
     @Setter @Column(nullable = false)

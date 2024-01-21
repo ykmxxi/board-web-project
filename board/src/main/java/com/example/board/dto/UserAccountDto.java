@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import com.example.board.domain.UserAccount;
 
 public record UserAccountDto(
-        Long id,
         String userId,
         String userPassword,
         String email,
@@ -18,7 +17,16 @@ public record UserAccountDto(
 ) {
 
     public static UserAccountDto of(
-            final Long id,
+            final String userId,
+            final String userPassword,
+            final String email,
+            final String nickname,
+            final String memo
+    ) {
+        return new UserAccountDto(userId, userPassword, email, nickname, memo, null, null, null, null);
+    }
+
+    public static UserAccountDto of(
             final String userId,
             final String userPassword,
             final String email,
@@ -30,7 +38,6 @@ public record UserAccountDto(
             final String modifiedBy
     ) {
         return new UserAccountDto(
-                id,
                 userId,
                 userPassword,
                 email,
@@ -45,7 +52,6 @@ public record UserAccountDto(
 
     public static UserAccountDto from(final UserAccount entity) {
         return new UserAccountDto(
-                entity.getId(),
                 entity.getUserId(),
                 entity.getUserPassword(),
                 entity.getEmail(),
