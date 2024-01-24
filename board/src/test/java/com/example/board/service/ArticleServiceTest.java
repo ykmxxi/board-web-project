@@ -22,11 +22,12 @@ import org.springframework.data.domain.Pageable;
 
 import com.example.board.domain.Article;
 import com.example.board.domain.UserAccount;
-import com.example.board.domain.type.SearchType;
+import com.example.board.domain.constant.SearchType;
 import com.example.board.dto.ArticleDto;
 import com.example.board.dto.ArticleWithCommentsDto;
 import com.example.board.dto.UserAccountDto;
 import com.example.board.repository.ArticleRepository;
+import com.example.board.repository.UserAccountRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -36,6 +37,7 @@ class ArticleServiceTest {
 
     @InjectMocks private ArticleService service; // mock 주입 대상
     @Mock private ArticleRepository articleRepository; // mock
+    @Mock private UserAccountRepository userAccountRepository;
 
     @DisplayName("검색어 없이 게시글을 검색하면, 게시글 페이지를 반환한다.")
     @Test
@@ -109,7 +111,7 @@ class ArticleServiceTest {
         given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
 
         // when
-        ArticleWithCommentsDto dto = service.getArticle(articleId);
+        ArticleWithCommentsDto dto = service.getArticleWithComments(articleId);
 
         // then
         assertThat(dto)
@@ -127,7 +129,7 @@ class ArticleServiceTest {
         given(articleRepository.findById(articleId)).willReturn(Optional.empty());
 
         // when
-        Throwable t = catchThrowable(() -> service.getArticle(articleId));
+        Throwable t = catchThrowable(() -> service.getArticleWithComments(articleId));
 
         // then
         assertThat(t)
@@ -141,12 +143,14 @@ class ArticleServiceTest {
     void givenArticleInfo_whenSavingArticle_thenSavesArticle() {
         // given
         ArticleDto dto = createArticleDto();
+        given(userAccountRepository.getReferenceById(dto.userAccountDto().userId())).willReturn(createUserAccount());
         given(articleRepository.save(any(Article.class))).willReturn(createArticle());
 
         // when
         service.saveArticle(dto);
 
         // then
+        then(userAccountRepository).should().getReferenceById(dto.userAccountDto().userId());
         then(articleRepository).should().save(any(Article.class));
     }
 
@@ -159,7 +163,7 @@ class ArticleServiceTest {
         given(articleRepository.getReferenceById(dto.id())).willReturn(article);
 
         // when
-        service.updateArticle(dto);
+        service.updateArticle(dto.id(), dto);
 
         // then
         assertThat(article)
@@ -177,7 +181,7 @@ class ArticleServiceTest {
         given(articleRepository.getReferenceById(dto.id())).willThrow(EntityNotFoundException.class);
 
         // when
-        service.updateArticle(dto);
+        service.updateArticle(dto.id(), dto);
 
         // then
         then(articleRepository).should().getReferenceById(dto.id());

@@ -30,25 +30,31 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.board.config.SecurityConfig;
-import com.example.board.domain.type.SearchType;
+import com.example.board.domain.constant.SearchType;
 import com.example.board.dto.ArticleWithCommentsDto;
 import com.example.board.dto.UserAccountDto;
 import com.example.board.service.ArticleService;
 import com.example.board.service.PaginationService;
+import com.example.board.util.FormDataEncoder;
 
 @DisplayName("View 컨트롤러 테스트 - 게시글")
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, FormDataEncoder.class})
 @WebMvcTest(ArticleController.class)
 class ArticleControllerTest {
 
     private final MockMvc mvc;
+    private final FormDataEncoder formDataEncoder;
 
     @MockBean private ArticleService articleService; // MockBean은 생성자 주입 지원 X
     @MockBean private PaginationService paginationService;
 
     // 테스트 코드는 생성자가 1개여도 @Autowired 꼭 붙여야함
-    public ArticleControllerTest(@Autowired final MockMvc mvc) {
+    public ArticleControllerTest(
+            @Autowired final MockMvc mvc,
+            @Autowired final FormDataEncoder formDataEncoder
+    ) {
         this.mvc = mvc;
+        this.formDataEncoder = formDataEncoder;
     }
 
     @DisplayName("[view][GET] 게시글 리스트 페이지 정상 호출")
@@ -143,7 +149,7 @@ class ArticleControllerTest {
         Long articleId = 1L;
         Long totalCount = 1L;
 
-        given(articleService.getArticle(articleId))
+        given(articleService.getArticleWithComments(articleId))
                 .willReturn(createArticleWithCommentsDto());
         given(articleService.getArticleCount())
                 .willReturn(totalCount);
@@ -158,7 +164,7 @@ class ArticleControllerTest {
                 .andExpect(model().attribute("totalCount", totalCount));
 
         then(articleService).should()
-                .getArticle(articleId);
+                .getArticleWithComments(articleId);
         then(articleService).should()
                 .getArticleCount();
     }
