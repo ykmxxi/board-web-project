@@ -38,8 +38,7 @@ public class ArticleComment extends AuditingFields {
     @JoinColumn(name = "userId")
     private UserAccount userAccount;
 
-    @Setter @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @Exclude
+    @Setter @ManyToOne(optional = false)
     private Article article;
     @Setter @Column(nullable = false, length = 500)
     private String content;
