@@ -3,6 +3,7 @@ package com.example.board.dto;
 import java.time.LocalDateTime;
 
 import com.example.board.domain.Article;
+import com.example.board.domain.UserAccount;
 
 public record ArticleDto(
         Long id,
@@ -15,6 +16,15 @@ public record ArticleDto(
         LocalDateTime modifiedAt,
         String modifiedBy
 ) {
+
+    public static ArticleDto of(
+            final UserAccountDto userAccountDto,
+            final String title,
+            final String content,
+            final String hashtag
+    ) {
+        return new ArticleDto(null, userAccountDto, title, content, hashtag, null, null, null, null);
+    }
 
     public static ArticleDto of(
             final Long id,
@@ -54,9 +64,9 @@ public record ArticleDto(
         );
     }
 
-    public Article toEntity() {
+    public Article toEntity(final UserAccount userAccount) {
         return Article.of(
-                userAccountDto.toEntity(),
+                userAccount,
                 title,
                 content,
                 hashtag
