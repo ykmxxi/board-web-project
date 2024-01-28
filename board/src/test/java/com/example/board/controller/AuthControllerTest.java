@@ -11,12 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.example.board.config.SecurityConfig;
+import com.example.board.config.TestSecurityConfig;
 
 @DisplayName("View 컨트롤러 테스트 - 로그인(인증)")
-@Import(SecurityConfig.class)
+@Import(TestSecurityConfig.class)
 @WebMvcTest(Void.class)
 class AuthControllerTest {
 
@@ -26,6 +27,7 @@ class AuthControllerTest {
         this.mvc = mvc;
     }
 
+    @WithMockUser
     @DisplayName("[view][GET] 로그인 페이지 - 정상 호출")
     @Test
     void 로그인_페이지() throws Exception {

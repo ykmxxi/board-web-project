@@ -21,6 +21,8 @@ public interface ArticleCommentRepository extends
 
     List<ArticleComment> findByArticle_Id(Long articleId);
 
+    void deleteByIdAndUserAccount_UserId(Long articleCommentId, String userId);
+
     @Override
     default void customize(final QuerydslBindings bindings, final QArticleComment root) {
         bindings.excludeUnlistedProperties(true); // 선택적으로 검색 조건을 사용
