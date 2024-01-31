@@ -9,12 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import com.example.board.config.SecurityConfig;
+import com.example.board.config.TestSecurityConfig;
 
-@Import(SecurityConfig.class)
+@Import(TestSecurityConfig.class)
 @WebMvcTest(MainController.class)
 class MainControllerTest {
 
@@ -24,6 +25,7 @@ class MainControllerTest {
         this.mvc = mvc;
     }
 
+    @WithMockUser
     @Test
     void 기본_페이지로_포워드() throws Exception {
         // given

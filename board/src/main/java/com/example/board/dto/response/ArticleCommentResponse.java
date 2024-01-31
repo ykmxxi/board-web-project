@@ -10,7 +10,8 @@ public record ArticleCommentResponse(
         String content,
         LocalDateTime createdAt,
         String email,
-        String nickname
+        String nickname,
+        String userId
 ) implements Serializable {
 
     public static ArticleCommentResponse of(
@@ -18,9 +19,10 @@ public record ArticleCommentResponse(
             final String content,
             final LocalDateTime createdAt,
             final String email,
-            final String nickname
+            final String nickname,
+            final String userId
     ) {
-        return new ArticleCommentResponse(id, content, createdAt, email, nickname);
+        return new ArticleCommentResponse(id, content, createdAt, email, nickname, userId);
     }
 
     public static ArticleCommentResponse from(final ArticleCommentDto dto) {
@@ -34,7 +36,8 @@ public record ArticleCommentResponse(
                 dto.content(),
                 dto.createdAt(),
                 dto.userAccountDto().email(),
-                nickname
+                nickname,
+                dto.userAccountDto().userId()
         );
     }
 
