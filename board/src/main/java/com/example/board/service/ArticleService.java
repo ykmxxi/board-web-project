@@ -82,7 +82,7 @@ public class ArticleService {
     public void updateArticle(final Long articleId, final ArticleDto articleDto) {
         try {
             Article article = articleRepository.findById(articleId)
-                    .orElseThrow();
+                    .orElseThrow(EntityNotFoundException::new);
             UserAccount userAccount = userAccountRepository.getReferenceById(articleDto.userAccountDto().userId());
 
             if (article.getUserAccount().equals(userAccount)) {

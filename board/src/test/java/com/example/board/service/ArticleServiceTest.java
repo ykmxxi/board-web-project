@@ -160,7 +160,7 @@ class ArticleServiceTest {
         // given
         Article article = createArticle();
         ArticleDto dto = createArticleDto("새 타이틀", "새 내용", "#springboot");
-        given(articleRepository.getReferenceById(dto.id())).willReturn(article);
+        given(articleRepository.findById(dto.id())).willReturn(Optional.of(article));
         given(userAccountRepository.getReferenceById(dto.userAccountDto().userId()))
                 .willReturn(dto.userAccountDto().toEntity());
 
@@ -172,7 +172,7 @@ class ArticleServiceTest {
                 .hasFieldOrPropertyWithValue("title", dto.title())
                 .hasFieldOrPropertyWithValue("content", dto.content())
                 .hasFieldOrPropertyWithValue("hashtag", dto.hashtag());
-        then(articleRepository).should().getReferenceById(dto.id());
+        then(articleRepository).should().findById(dto.id());
         then(userAccountRepository).should().getReferenceById(dto.userAccountDto().userId());
     }
 
@@ -181,13 +181,13 @@ class ArticleServiceTest {
     void givenNonexistentArticleInfo_whenUpdatingArticle_thenLogsWarningAndDoesNothing() {
         // given
         ArticleDto dto = createArticleDto("새 타이틀", "새 내용", "#springboot");
-        given(articleRepository.getReferenceById(dto.id())).willThrow(EntityNotFoundException.class);
+        given(articleRepository.findById(dto.id())).willThrow(EntityNotFoundException.class);
 
         // when
         service.updateArticle(dto.id(), dto);
 
         // then
-        then(articleRepository).should().getReferenceById(dto.id());
+        then(articleRepository).should().findById(dto.id());
     }
 
     @DisplayName("게시글의 ID를 입력하면, 게시글을 삭제한다")
